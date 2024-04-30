@@ -322,12 +322,14 @@ const Canvas = ({boardId}) => {
 
   function zoomIn() {
     setScale(prevScale => prevScale + 0.1)
+    console.log(scale)
   }
 
 
   function zoomOut() {
     if(scale > 0.1 ){
       setScale(prevScale => prevScale - 0.1)
+      console.log(scale)
     }
     
   }
@@ -525,6 +527,7 @@ const insertCombin= useMutation(({storage}) =>{
   const layerIds=storage.get("layerIds")
   const liveLayers = storage.get("layers")
   var number=0
+  let ideasX=0;
   
   for (const id of layerIds){
     const layer = liveLayers.get(id)
@@ -532,11 +535,17 @@ const insertCombin= useMutation(({storage}) =>{
     if (layer.get("type")== 15){
       number=number+1
     }
+    if (layer.get("type"==19)){
+      ideasX=layer.get("x")
+
+
+
+    }
   }
   const x = 55+number*20
   const y = 350 +number*20
   
-  insertLayer1(15,{x:x,y:y},{height:305,width:350},{r:200, g:233, b:251})
+  insertLayer1(15,{x:x+ideasX,y:y},{height:305,width:350},{r:200, g:233, b:251})
   
   moveToFront2()
   },[] )
@@ -549,6 +558,7 @@ const insertCombin= useMutation(({storage}) =>{
   
   let ideas = null;
   let currentY = 0;
+  let column=null;
   
   for (const id of layerIds){
     const layer = liveLayers.get(id)
@@ -567,6 +577,7 @@ const insertCombin= useMutation(({storage}) =>{
     else if(layer.get("type")== 17){
   
       const currentHeight=layer.get("height")
+      column=layer
       
       layer.update({
         height: currentHeight + 130
@@ -584,19 +595,20 @@ const insertCombin= useMutation(({storage}) =>{
     
   }
   
-  const y = 190 +(number/9)*120
+  const y = 185 +(number/9)*120
+
   
+  const shift= column.get("x")
   
-  
-  insertLayer1(18,{x:60,y:y},{height:100,width:155},{r:255, g:243, b:209})
-  insertLayer1(18,{x:230,y:y},{height:100,width:135},{r:200, g:233, b:251})
-  insertLayer1(18,{x:375,y:y},{height:100,width:140},{r:252, g:228, b:200})
-  insertLayer1(18,{x:525,y:y},{height:100,width:140},{r:200, g:233, b:251})
-  insertLayer1(18,{x:680,y:y},{height:100,width:135},{r:255, g:198, b:242})
-  insertLayer1(18,{x:825,y:y},{height:100,width:140},{r:202, g:252, b:234})
-  insertLayer1(18,{x:975,y:y},{height:100,width:140},{r:238, g:227, b:219})
-  insertLayer1(18,{x:1123,y:y},{height:100,width:143},{r:202, g:252, b:234})
-  insertLayer1(18,{x:1280,y:y},{height:100,width:150},{r:255, g:243, b:209})
+  insertLayer1(18,{x:15+shift,y:y},{height:100,width:155},{r:255, g:243, b:209})
+  insertLayer1(18,{x:180+shift,y:y},{height:100,width:135},{r:200, g:233, b:251})//170
+  insertLayer1(18,{x:325+shift,y:y},{height:100,width:140},{r:252, g:228, b:200})//145
+  insertLayer1(18,{x:475+shift,y:y},{height:100,width:140},{r:200, g:233, b:251})//150
+  insertLayer1(18,{x:630+shift,y:y},{height:100,width:135},{r:255, g:198, b:242})//155
+  insertLayer1(18,{x:775+shift,y:y},{height:100,width:140},{r:202, g:252, b:234})//145
+  insertLayer1(18,{x:925+shift,y:y},{height:100,width:140},{r:238, g:227, b:219})//150
+  insertLayer1(18,{x:1073+shift,y:y},{height:100,width:143},{r:202, g:252, b:234})//148
+  insertLayer1(18,{x:1230+shift,y:y},{height:100,width:150},{r:255, g:243, b:209})//157
   moveToFront2()
   },[] )
     
@@ -1020,6 +1032,7 @@ const insertCombin= useMutation(({storage}) =>{
           id={layerId} 
           camera={camera}
           insertRaffin={insertRaffin}
+          scale={scale}
           />
         ))}
 

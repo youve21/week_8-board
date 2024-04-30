@@ -10,7 +10,7 @@ const AddShapeRaffin = ({camera,id, insertRaffin, scale}) => {
 
     const layer = useStorage((root) => root.layers.get(id))
 
-    const jjg = useMutation(({ storage }) => {
+    const getId = useMutation(({ storage }) => {
       const liveLayers = storage.get('layers')
       const layerIds = storage.get('layerIds')
       for(const id of layerIds){
@@ -27,7 +27,7 @@ const AddShapeRaffin = ({camera,id, insertRaffin, scale}) => {
     const width = layer.width
     const height= layer.height
     //layer.get(id).set("fill",  {r:10,g:10,b:10})
-    const id17 = jjg()
+    const id17 = getId()
     const layerRaff = document.getElementById(`${id17}`)
     const boundaries = () => {
       if(layerRaff){
