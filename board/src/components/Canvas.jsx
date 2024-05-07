@@ -35,25 +35,71 @@ import MoscowDevrait from './MoscowDoit'
 import MoscowPourrait from './MoscowPourrait'
 import MoscowDevraitPas from './MoscowDevraitPas'
 import MoscowTitre from './MoscowTitre'
+import VoteResult from './VoteResult'
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import xicon from '../assets/xicon.svg'
+import VoteNote from './VoteNote'
+
+
 
 const MAX_LAYERS = 100
 
 const Canvas = ({boardId}) => {
-
-  const layerIds = useStorage((root) => root.layerIds)//we use layers to know where and what to display in our canvas
-
+  //const [ triggerVote, setTriggerVote ] = useState(false)
   const selection = useSelf((me) => me.presence.selection)
   const [ showMap, setShowMap ] = useState(false)
   const [ canvasState, setCanvasState ] = useState({mode: CanvasMode.None})
   const [ camera, setCamera ] = useState({ x: 0, y: 0 })
   const [ focus, setFocus ] = useState(false)
-  const [ triggerVote, setTriggerVote ] = useState(false)
   const [ startVote, setStartVote ] = useState(false)
   const [ mapScale, setMapScale ] = useState(0.23)
   const [ transformX, setTransformX ] = useState(0)
   const [ transformY, setTransformY ] = useState(0)
   const [ lastUsedColor, setLastUsedColor ] = useState({r: 255,g : 255, b: 255})
+  const [ voteIds, setVoteIds ] = useState([])
 
+  const layerIds = useStorage((root) => root.layerIds)//we use layers to know where and what to display in our canvas
+  const triggerVote = () => {
+    for (const id of layerIds) {
+      const layer = useStorage((root) => root.layers.get(id))
+
+      if(layer.triggerVote){
+        return true
+      }
+    }
+    return false
+  }
+  
+
+  
 
   const locking = useMutation(({ storage }) => {
     const liveLayers = storage.get('layers')
@@ -96,8 +142,11 @@ const Canvas = ({boardId}) => {
       fill: lastUsedColor,
       vote: 0,
       votable: false,
+      votableNow: false,
+      voters: ["508","597"],
       lock: false,
-      hide: false
+      hide: false,
+      triggerVote: false
     })
 
     liveLayerIds.push(layerId)
@@ -333,14 +382,18 @@ const Canvas = ({boardId}) => {
     }
     
   }
+
+  const [visible, setVisible] = useState(false)
+  const [sheet, setSheet] = useState(false)
   
     const handleVote = () => {
-            if (!startVote) {
-                setStartVote(true);
-            } else {
-                setTriggerVote(false);
-                setStartVote(false);
-            }
+      if (!startVote) {
+        setStartVote(true);
+      } else{
+        setTriggerVote(false);
+        setStartVote(false);
+        setVisible(true)
+      }
     }
   //mapScale = difference * 0.23 / 500
 
@@ -513,7 +566,7 @@ const Canvas = ({boardId}) => {
               key={layerId}
               id={layerId}
             /> 
-          ))}
+          ))} 
           <rect x={x} y={y} width={viewportWidth} height={viewportHeight} className=' stroke-black stroke-[6] fill-transparent' style={{ transform: `translate(-${camera.x}px, -${camera.y}px)`}}/>  
         </g>
       </svg>
@@ -956,9 +1009,47 @@ const insertCombin= useMutation(({storage}) =>{
   }
   },[])
 
+  const ggg = () => {
+    setSheet(true)
+    setVisible(false)
+  }
+
+  const endVote = useMutation(({storage}) => {
+    setSheet(false)
+    const liveLayers = storage.get("layers")
+    for (const id of voteIds) {
+      const layer = liveLayers.get(id)
+      if (layer) {
+        layer.update({
+          votableNow: false,
+          votable: false
+        })
+      }
+      
+    }
+    setVoteIds([])
+  }, [])
+
+  const endVote2 = useMutation(({storage}) => {
+    setVisible(false)
+    const liveLayers = storage.get("layers")
+    for (const id of voteIds) {
+      const layer = liveLayers.get(id)
+      if (layer) {
+        layer.update({
+          votableNow: false,
+          votable: false
+        })
+      }
+      
+    }
+    setVoteIds([])
+  }, [])
 
   return (
-    <main className='h-full w-full relative bg-neutral-100 touch-none overflow-hidden'>
+  
+<main className={`h-[40.7rem] w-full dark:bg-black bg-white dark:bg-dot-white/[0.2] bg-dot-black/[0.2] relative overflow-hidden`}>
+      {/* Radial gradient for the container to give a faded look */}
         <Info 
           boardId={boardId}
           canRedo={canRedo}
@@ -968,10 +1059,7 @@ const insertCombin= useMutation(({storage}) =>{
           setCamera={setCamera}
           camera={camera}
         />
-        <Participants 
-          triggerVote={triggerVote}
-          setTriggerVote={setTriggerVote}
-        />
+        <Participants />
         <Toolbar 
           canvasState={canvasState}
           setCanvasState={setCanvasState}
@@ -979,11 +1067,62 @@ const insertCombin= useMutation(({storage}) =>{
         <div className='absolute bottom-24 right-5'>
           {showMap ? <Map /> : <></>}
         </div>
-        {triggerVote ? <Button className="fixed bottom-0 left-1/2" onClick={()=>handleVote()}>{startVote ? "Stop Vote" : "Start Vote"}</Button> : <></>}
+        {triggerVote() ?  startVote ? 
+        <AlertDialog>
+          <AlertDialogTrigger>
+              <Button className="fixed bottom-0 left-1/4 myButton">Stop Vote</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="flex flex-col w-[100%]">
+            <AlertDialogHeader className="flex flex-row gap-5 items-center">
+              <AlertDialogTitle>End voting for everyone?</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex flex-row self-center">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={() => handleVote()}>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+           
+         : <Button className="fixed bottom-0 left-1/4" onClick={() => handleVote()}>Start Vote</Button> 
+        : <></>}
+        { visible ?
+          <div className='fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0'>
+                <Card className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg">
+                <CardHeader>
+                  <CardTitle>Vote results</CardTitle>
+                </CardHeader>
+                <CardFooter className="gap-x-3">
+                  <Button onClick={() => ggg()}>See full results</Button>
+                  <Button onClick={endVote2}>Close</Button>
+                </CardFooter>
+              </Card>
+            </div>
+
+         : <></>}
+         {sheet ? 
+           <div className={`fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out ${ sheet ? "animate-in duration-300 slide-out-to-right" : "animate-out duration-500 slide-in-from-right " } inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm`}>
+              <div className='flex justify-between items-center pb-8'> 
+                <h1 className=' font-bold text-2xl'>Voting</h1>
+                <Button variant="board" className="p-1" onClick={endVote}>
+                  <img src={xicon} alt="xicon" className='w-[50px] h-[50px]'/>
+                </Button>
+              </div>
+              <div className='flex flex-col gap-y-4'>
+                {voteIds.map((id) => (
+                  <VoteNote key={id} id={id}/>
+                )
+                )}
+              </div>
+              {/* hna ndirou icon pour metre sheet a false and we also make votableNow to false*/}
+           </div>
+         : <></>}
         <Quest />
         {layerIds.map((layerId) => (
-          triggerVote ?(<VoteDisplay key={layerId} id={layerId} camera={camera} triggerVote={triggerVote} startVote={startVote}/>) : <></>
+          <VoteDisplay key={layerId} id={layerId} camera={camera} startVote={startVote}/>
         ))}
+        {/* {layerIds.map((layerId) => (
+          triggerVote ?(<VoteResult key={layerId} id={layerId} camera={camera} triggerVote={triggerVote} startVote={startVote}/>) : <></>
+        ))} */}
 
         <Button className='fixed top-0 left-[50%]' onClick={Raffinement}>To Raffinement...</Button>
         <Button  onClick={Combinaison}>  To.............................................................................................. Combinaison</Button>
@@ -1115,7 +1254,8 @@ const insertCombin= useMutation(({storage}) =>{
                   onLayerPointerDown={onLayerPointerDown}
                   selectionColor={layerIdsToColorSelection[layerId]}//to know when a user has selected an element and the color will match their color Id
                   hide={hide}
-                  triggerVote={triggerVote}
+                  voteIds={voteIds}
+                  setVoteIds={setVoteIds}
                 /> 
             ))}
             <SelectionBox 

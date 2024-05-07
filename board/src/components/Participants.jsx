@@ -42,12 +42,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useRef } from 'react'
+import { Separator } from "@/components/ui/separator"
 import { Textarea } from "@/components/ui/textarea"
 import { useState } from 'react'
+import separator from '../assets/separator.svg' 
+import { useMutation } from '../../liveblocks.config'
 
 
-const Participants = ({ triggerVote, setTriggerVote }) => {
+const Participants = () => {
 
   //fetch user data (profile image)
   const users = {
@@ -64,9 +66,20 @@ const Participants = ({ triggerVote, setTriggerVote }) => {
       Nom: "Amine"
     }
   }
-  const triggeredVote = () => {
-    setTriggerVote(true)
-  }
+  const triggeredVote = useMutation(({storage}) => {
+    const liveLayers = storage.get('layers')
+    const layerIds = storage.get('layerIds')
+    for (const id of layerIds) {
+      const layer = liveLayers.get(id)
+    
+      if (layer) {
+        layer.update({
+          triggerVote: true
+        })
+      }
+    }
+
+  }, [])
   const [inputValue, setInputValue] = useState('');
 
   // Function to handle input change
@@ -78,14 +91,15 @@ const Participants = ({ triggerVote, setTriggerVote }) => {
   
 
   return (
-    <div className='fixed h-12 top-2 z-10 right-2 bg-white rounded-md p-3 flex gap-10 justify-around items-center shadow-md'>
-      <div className='flex flex-row gap-3 items-center justify-around'>
-      <Button variant="board" className="p-2" onClick={() => triggeredVote()}>
-        <img src={vote} alt="vote" className='w-[23px] h-[23px]'/>
+    <div className='fixed h-12 top-2 z-10 right-2 bg-white rounded-xl p-3 flex gap-10 justify-around items-center shadow-md sh1'>
+      <div className='flex flex-row gap-1 items-center justify-around'>
+      <Button variant="board" className="p-1" onClick={() => triggeredVote()}>
+        <img src={vote} alt="vote" className='w-[25px] h-[25px]'/>
         </Button>
-        <Button variant="board" className="p-2" >
-        <img src={timer} alt="timer" className='w-[23px] h-[23px]'/>  
+        <Button variant="board" className="p-1" >
+        <img src={timer} alt="timer" className='w-[25px] h-[25px]'/>  
         </Button>   
+        <img src={separator} alt="separator" className='bg-[#e7e6e6] h-8'/>
       </div>
       <div className='flex flex-row gap-3 items-center justify-around'>
         <NewThread>
@@ -120,9 +134,9 @@ const Participants = ({ triggerVote, setTriggerVote }) => {
         <AlertDialog >
           <AlertDialogTrigger>
             <Hint label="Link">
-              <Button className="p-2 bg-[#606FFF] hover:bg-[#606FFF]/90 gap-5 px-4" >
-                <h6 className='text-white font-light'>share</h6>
-                <img src={share} alt='share' className='w-[20px] h-[20px]'/>
+              <Button className=" bg-[#606FFF] hover:bg-[#606FFF]/90 gap-3 px-[0.65rem] h-7" >
+                <h6 className='text-white font-light text-xs'>share</h6>
+                <img src={share} alt='share' className='w-[15px] h-[15px]'/>
               </Button>   
             </Hint>
           </AlertDialogTrigger>

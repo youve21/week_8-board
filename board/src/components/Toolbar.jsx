@@ -61,7 +61,7 @@ const Toolbar = ({ canvasState, setCanvasState, focus }) => {
   }
   return (
     <motion.div className='fixed top-1/2 z-10 -translate-y-[50%] flex flex-col gap-y-4'>
-        <div className='bg-[#F2F2F2] w-12 rounded-lg p-2 flex gap-y-1 flex-col items-center shadow-md'>
+        <div className='bg-[#F2F2F2] sh2 w-12 rounded-lg p-2 flex gap-y-1 flex-col items-center shadow-md'>
             <div>
               <Button variant="board" className="p-2 hover:bg-tranparent bg-transparent" >
                 <img src={moveTB} alt="moveTB" className='w-[14px] h-[14px]'/>
@@ -383,7 +383,7 @@ const Toolbar = ({ canvasState, setCanvasState, focus }) => {
         <div className='bg-[#DCE0FF] rounded-md w-12 h-12 p-2 translate-x-2 flex gap-y-1 flex-col items-center shadow-md'>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="board" className="p-2" >
+              <Button variant="board" className="p-2 sh2" >
                 <img src={expert} alt="expert" className='w-[25px] h-[25px]'/>
               </Button>
             </DropdownMenuTrigger>

@@ -1,3 +1,4 @@
+
 import React from 'react'
 import exportIc from '../assets/exportIc.svg'
 import search from '../assets/search.svg'
@@ -81,13 +82,13 @@ const Info = ({ boardId , canRedo, canUndo, undo, redo, setCamera, camera }) => 
 
 
   return (
-    <div className='fixed top-2 left-2 flex flex-row z-10'>
-      <div className='bg-white rounded-md px-1.5 h-12 flex items-center shadow-md'>
-        <Button variant="board" className="p-2" >
-          <img src={LogoIdealesi} alt='LogoIdealesi' className='w-[50px] h-[50px]'/>
+    <div className='fixed top-2 left-2 flex gap-x-3 flex-row z-10'>
+      <div className='bg-white rounded-xl  flex items-center shadow-md sh'>
+        <Button variant="board" className="p-1" >
+          <img src={LogoIdealesi} alt='LogoIdealesi' className='w-[45px] h-[45px]'/>
         </Button>
       </div>
-      <div className='bg-white rounded-md px-1.5 h-12 flex gap-5 items-center justify-around shadow-md'>
+      <div className='bg-white rounded-xl px-1.5 h-12 flex gap-5 items-center justify-around shadow-md sh'>
         <AlertDialog >
           <AlertDialogTrigger>
             <Hint label="Modidfier les paramètres du tableau" className="text-3xl font-semibold">
@@ -127,7 +128,7 @@ const Info = ({ boardId , canRedo, canUndo, undo, redo, setCamera, camera }) => 
                   <DropdownMenuItem key={result.id} onClick={() => positionView(result.id)}>
                     {result.text}
                   </DropdownMenuItem>
-                )) : (<DropdownMenuItem>No posts to display.</DropdownMenuItem>)}
+                )) : (<DropdownMenuItem>No results to display.</DropdownMenuItem>)}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -136,7 +137,7 @@ const Info = ({ boardId , canRedo, canUndo, undo, redo, setCamera, camera }) => 
           </Button>  
         </div>
       </div>
-      <div className='bg-white rounded-md px-1.5 h-10 translate-y-[.5rem] flex gap-3 justify-around items-center shadow-md'>
+      <div className='bg-white sh translate-x-3 rounded-xl px-1 h-10 translate-y-[.3rem] flex gap-2 justify-around items-center shadow-md'>
         <Button disabled={!canUndo} variant="board" className="p-2" onClick={undo}>
           <img src={undoo} alt="undo" className='w-[18px] h-[18px]'/>
         </Button>
@@ -155,4 +156,3 @@ export const InfoSkeleton = () => {
 }
 
 export default Info
-

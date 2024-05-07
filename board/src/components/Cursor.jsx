@@ -5,7 +5,7 @@ import { useOther } from '../../liveblocks.config'
 import { MousePointer2 } from 'lucide-react'
 
 const Cursor = memo(({connectionId}) => {
-
+   
   const info = useOther(connectionId, (user) => user?.info)
   const cursor = useOther(connectionId, (user) => user.presence.cursor)
 

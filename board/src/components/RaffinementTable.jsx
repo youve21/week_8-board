@@ -38,7 +38,7 @@ const RaffinementTable = ({camera,id, insertCombin,scale}) => {
     const width = layer.width
     const height= layer.height
     let scaleRound = Math.floor(scale*10)/10
-    console.log(scaleRound)
+    //console.log(scaleRound)
 
 
     return (

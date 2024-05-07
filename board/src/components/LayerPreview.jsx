@@ -18,7 +18,7 @@ import { IdeasRectCombin } from './IdeasRectCombin'
 import { PriorityMoscow } from './PriorityMoscow'
 import { IdeasRectMoscow } from './IdeasRectMoscow'
 
-const LayerPreview = memo(({id, onLayerPointerDown, selectionColor, hide, triggerVote}) => {
+const LayerPreview = memo(({id, onLayerPointerDown, selectionColor, hide, voteIds, setVoteIds}) => {
   const layer = useStorage((root) => root.layers.get(id))
 
   if(!layer) return null
@@ -33,7 +33,8 @@ const LayerPreview = memo(({id, onLayerPointerDown, selectionColor, hide, trigge
           layer={layer}
           onPointerDown={onLayerPointerDown}
           selectionColor={selectionColor}
-          triggerVote={triggerVote}
+          voteIds={voteIds}
+          setVoteIds={setVoteIds}
         />
       )
     case LayerType.Rectangle:

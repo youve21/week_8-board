@@ -75,3 +75,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+.sh{
+  -webkit-box-shadow: 22px 16px 59px 2px rgba(66, 68, 90, 0.28);
+-moz-box-shadow: 22px 16px 59px 2px rgba(66, 68, 90, 0.28);
+box-shadow: 22px 16px 59px 2px rgba(66, 68, 90, 0.28);
+}
+.sh1{
+  -webkit-box-shadow: -39px 16px 59px -5px rgba(66, 68, 90, 0.28);
+-moz-box-shadow: -39px 16px 59px -5px rgba(66, 68, 90, 0.28);
+box-shadow: -39px 16px 59px -5px rgba(66, 68, 90, 0.28);
+}
+.sh2{
+  -webkit-box-shadow: 13px 6px 65px -11px rgba(66, 68, 90, 0.28);
+-moz-box-shadow: 13px 6px 65px -11px rgba(66, 68, 90, 0.28);
+box-shadow: 13px 6px 65px -11px rgba(66, 68, 90, 0.28);
+}

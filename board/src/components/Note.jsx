@@ -18,9 +18,18 @@ const calculateFontSize = (width, height) => {
   )
 }
 
+function isInArray(array, element) {
+  for (let i = 0; i < array.length; i++) {
+      if (array[i] === element) {
+          return true; // Element found
+      }
+  }
+  return false; // Element not found
+}
 
-export const Note = ({layer, onPointerDown, id, selectionColor, triggerVote}) => {
-  const { x, y, width, height, fill, value } = layer
+
+export const Note = ({layer, onPointerDown, id, selectionColor, voteIds, setVoteIds}) => {
+  const { x, y, width, height, fill, triggerVote, value } = layer
 
   const updateValue = useMutation(({ storage }, newValue) => {
     const liveLayers = storage.get("layers")
@@ -32,11 +41,13 @@ export const Note = ({layer, onPointerDown, id, selectionColor, triggerVote}) =>
     updateValue(e.target.value)
   }
 
-  const makeVotable = useMutation(({ storage }, triggerVote) => {
-    if(triggerVote){
-      const liveLayers = storage.get("layers")
-      liveLayers.get(id)?.set("votable", true)
+  const makeVotable = useMutation(({ storage }) => {
+    if(!isInArray(voteIds, id)){
+      setVoteIds(prevVoteIds => [...prevVoteIds, id]);
     }
+    const liveLayers = storage.get("layers")
+    liveLayers.get(id)?.set("votable", true)
+    liveLayers.get(id)?.set("votableNow", true)
   }, [])
   // useEffect(() => {
   //   setTriggerVote(!triggerVote)
@@ -55,7 +66,9 @@ export const Note = ({layer, onPointerDown, id, selectionColor, triggerVote}) =>
         outline: selectionColor ? `1px solid ${selectionColor}` : "none",
         backgroundColor: fill ? colorToCss(fill) : "#000",
       }}
-      className="shadow-md drop-shadow-xl"
+      className="shadow-lg drop-shadow-2xl"
+      onClick={triggerVote ? () => makeVotable() : undefined}
+      disabled={!triggerVote}
     >
       <ContentEditable
         html={value ? value : ""}
@@ -69,7 +82,7 @@ export const Note = ({layer, onPointerDown, id, selectionColor, triggerVote}) =>
           fontFamily: 'Kalam, cursive',
           backgroundColor: fill ? colorToCss(fill) : "#000",
         }}
-        onClick={() => makeVotable(triggerVote)}
+        
       />
     </foreignObject>
   )
